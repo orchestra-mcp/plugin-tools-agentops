@@ -37,7 +37,7 @@ func CreateAccountSchema() *structpb.Struct {
 			"auth_method": map[string]any{
 				"type":        "string",
 				"description": "Authentication method",
-				"enum":        []any{"claude_code", "setup_token", "api_key", "custom"},
+				"enum":        []any{"claude_code", "setup_token", "api_key", "oauth", "custom"},
 			},
 			"config": map[string]any{
 				"type":        "string",
@@ -143,7 +143,7 @@ func CreateAccount(s *store.AccountStore) ToolHandler {
 		}
 
 		// Validate auth method.
-		if err := helpers.ValidateOneOf(authMethod, "claude_code", "setup_token", "api_key", "custom"); err != nil {
+		if err := helpers.ValidateOneOf(authMethod, "claude_code", "setup_token", "api_key", "oauth", "custom"); err != nil {
 			return helpers.ErrorResult("validation_error", err.Error()), nil
 		}
 

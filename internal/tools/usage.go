@@ -153,15 +153,17 @@ func buildEnvVars(acct *store.Account) map[string]string {
 
 // buildClaudeEnv returns env vars for Anthropic Claude.
 func buildClaudeEnv(acct *store.Account) map[string]string {
+	var env map[string]string
+
 	switch acct.AuthMethod {
 	case "claude_code":
-		return map[string]string{}
+		env = map[string]string{}
 	case "setup_token":
 		token := acct.Config["token"]
 		if token == "" {
 			token = acct.Config["CLAUDE_CODE_TOKEN"]
 		}
-		return map[string]string{
+		env = map[string]string{
 			"CLAUDE_CODE_TOKEN": token,
 		}
 	case "api_key":
@@ -169,12 +171,25 @@ func buildClaudeEnv(acct *store.Account) map[string]string {
 		if key == "" {
 			key = acct.Config["ANTHROPIC_API_KEY"]
 		}
-		return map[string]string{
+		env = map[string]string{
 			"ANTHROPIC_API_KEY": key,
 		}
+	case "oauth":
+		token := acct.Config["access_token"]
+		env = map[string]string{}
+		if token != "" {
+			env["CLAUDE_CODE_OAUTH_TOKEN"] = token
+		}
 	default:
-		return map[string]string{}
+		env = map[string]string{}
 	}
+
+	// Support per-account config directory for multi-account isolation.
+	if dir := acct.Config["config_dir"]; dir != "" {
+		env["CLAUDE_CONFIG_DIR"] = dir
+	}
+
+	return env
 }
 
 // buildOpenAICompatEnv returns env vars for OpenAI-compatible providers

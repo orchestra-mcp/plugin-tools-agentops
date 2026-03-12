@@ -53,4 +53,9 @@ func (p *AgentOpsPlugin) RegisterTools(builder *plugin.PluginBuilder) {
 	builder.RegisterTool("report_usage",
 		"Record a usage event and update account running totals",
 		tools.ReportUsageSchema(), tools.ReportUsage(s, t))
+
+	// --- OAuth tools (1) ---
+	builder.RegisterTool("connect_claude_code_account",
+		"Connect a Claude Code account via OAuth. Call without code to start the flow (opens browser), then call again with the authorization code to complete.",
+		tools.ConnectClaudeCodeAccountSchema(), tools.ConnectClaudeCodeAccount(s))
 }
